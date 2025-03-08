@@ -1,0 +1,17 @@
+# Ignore frontend specific files/folders
+/frontend/node_modules/
+/frontend/.env
+/frontend/build/
+
+# Ignore backend specific files/folders
+/backend/node_modules/
+/backend/.env
+/backend/build/
+
+# Ignore system or IDE files
+.DS_Store
+*.log
+*.env
+
+# Ignore other general files/folders
+*.tmp
