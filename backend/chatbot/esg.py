@@ -536,18 +536,20 @@ def chat_response(user_message, model_path="finance-chat.Q5_K_M.gguf"):
             logger.warning(f"No data found for target symbol: {target_symbol}")
             ticker_summary += f"No detailed data available for {target_symbol}. "
     
-    # Get a few general tickers if needed (no target or for comparison)
-    if not target_symbol or (is_investment_query and len(ticker_details) < 3):
-        logger.info("Getting additional tickers for context")
+    # Only get additional tickers if explicitly requested or if query is about comparing stocks
+    additional_tickers_requested = any(term in user_message.lower() for term in [
+        "compare", "versus", "vs", "against", "other stocks", "alternatives", 
+        "competitors", "similar companies", "sector performance"
+    ])
+    
+    # Get a few general tickers ONLY if no specific ticker was found AND the query explicitly requests comparison
+    if not target_symbol and additional_tickers_requested:
+        logger.info("Getting additional tickers for comparison as requested")
         general_tickers = get_all_ticker_pages(max_pages=1)[:3]
         
         for ticker in general_tickers:
             symbol = ticker.get("symbol", "N/A")
             
-            # Skip if this is the same as our target symbol
-            if symbol == target_symbol:
-                continue
-                
             # Get real-time data for this ticker too
             realtime_data = get_realtime_quote(symbol)
             combined_data = extract_ticker_data(ticker, realtime_data)
@@ -570,7 +572,10 @@ def chat_response(user_message, model_path="finance-chat.Q5_K_M.gguf"):
                         ticker_summary += f"ESG Score: {esg_score}; "
     
     if not ticker_summary:
-        ticker_summary = "No ticker information available."
+        if target_symbol:
+            ticker_summary = f"No information available for {target_symbol}."
+        else:
+            ticker_summary = "No specific ticker symbol detected in your query. Please include a stock symbol (e.g., AAPL for Apple) if you want stock information."
         logger.warning("No ticker data could be retrieved")
     
     # Log the final ticker summary
