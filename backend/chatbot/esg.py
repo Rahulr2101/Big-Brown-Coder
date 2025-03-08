@@ -40,6 +40,145 @@ ESG_API_HEADERS = {
     "Accept-Encoding": "identity"
 }
 
+# Conversation Context Management
+class ConversationContext:
+    def __init__(self, max_history=5):
+        self.max_history = max_history
+        self.conversation_history = []
+        self.mentioned_symbols = {}  # Dictionary of symbols with timestamp of last mention
+        self.latest_symbol = None  # Most recently discussed symbol
+        self.current_topic = None  # Current topic of conversation
+        self.ticker_data = {}  # Cache of ticker data to avoid repeated API calls
+
+    def add_interaction(self, user_query, bot_response, detected_symbols=None):
+        """
+        Add a new interaction to the conversation history
+        
+        Args:
+            user_query: User's question
+            bot_response: Bot's response
+            detected_symbols: Symbols detected in this interaction
+        """
+        timestamp = time.time()
+        
+        # Update conversation history
+        self.conversation_history.append({
+            "timestamp": timestamp,
+            "user_query": user_query,
+            "bot_response": bot_response,
+            "detected_symbols": detected_symbols or []
+        })
+        
+        # Trim history if needed
+        if len(self.conversation_history) > self.max_history:
+            self.conversation_history = self.conversation_history[-self.max_history:]
+        
+        # Update mentioned symbols
+        if detected_symbols:
+            for symbol in detected_symbols:
+                self.mentioned_symbols[symbol] = timestamp
+                self.latest_symbol = symbol  # Update most recent symbol
+    
+    def get_relevant_context(self, query):
+        """
+        Get context relevant to the current query
+        
+        Args:
+            query: Current user query
+            
+        Returns:
+            Dictionary with relevant context information
+        """
+        # Detect symbols in current query
+        detected_symbols = self._extract_symbols(query)
+        
+        # If no symbols in current query, use the most recent symbol
+        active_symbol = None
+        if detected_symbols:
+            active_symbol = detected_symbols[0]
+        elif self.latest_symbol:
+            # If query seems to refer to previous context
+            if self._is_referring_to_previous(query):
+                active_symbol = self.latest_symbol
+        
+        # Get recent conversation summary
+        recent_summary = self._summarize_recent_conversation()
+        
+        return {
+            "active_symbol": active_symbol,
+            "detected_symbols": detected_symbols,
+            "latest_symbol": self.latest_symbol,
+            "mentioned_symbols": list(self.mentioned_symbols.keys()),
+            "recent_summary": recent_summary
+        }
+    
+    def _extract_symbols(self, query):
+        """Extract potential stock symbols from query"""
+        # Find all uppercase sequences of 1-5 letters that look like stock symbols
+        symbol_matches = re.findall(r'\b([A-Z]{1,5})\b', query)
+        
+        # Filter out common English words that might be mistaken for symbols
+        filtered_symbols = []
+        common_words = {"A", "I", "AM", "PM", "AN", "BY", "IF", "IS", "IT", "ME", "MY", "NO", "OK", "ON", "OR", "SO", "TO", "UP", "US", "WE", "AS", "AT", "BE", "DO", "GO", "HE", "HI", "IN"}
+        
+        for symbol in symbol_matches:
+            if symbol not in common_words and len(symbol) >= 2:
+                filtered_symbols.append(symbol)
+        
+        return filtered_symbols
+    
+    def _is_referring_to_previous(self, query):
+        """Check if the query seems to refer to previously mentioned entities"""
+        referring_phrases = [
+            "it", "its", "this", "that", "they", "them", "this stock", 
+            "that stock", "this company", "that company", "the stock", 
+            "the company", "the above", "mentioned", "previous", "above",
+            "invest in", "buying", "selling", "worth", "good investment",
+            "dividend", "price", "target", "performance", "should i buy"
+        ]
+        
+        query_lower = query.lower()
+        return any(phrase in query_lower for phrase in referring_phrases)
+    
+    def _summarize_recent_conversation(self):
+        """Create a summary of recent conversation"""
+        if not self.conversation_history:
+            return "No previous conversation."
+        
+        # Get last few interactions
+        recent = self.conversation_history[-3:]  # Last 3 interactions
+        
+        summary = []
+        for i, interaction in enumerate(recent):
+            # Truncate long responses for the summary
+            user_query = interaction["user_query"]
+            bot_response = interaction["bot_response"]
+            if len(bot_response) > 200:
+                bot_response = bot_response[:197] + "..."
+            
+            summary.append(f"Q{i+1}: {user_query}")
+            summary.append(f"A{i+1}: {bot_response}")
+        
+        return "\n".join(summary)
+    
+    def add_ticker_data(self, symbol, data):
+        """Cache ticker data for future reference"""
+        self.ticker_data[symbol] = {
+            "data": data,
+            "timestamp": time.time()
+        }
+    
+    def get_cached_ticker_data(self, symbol, max_age=300):  # 5 minutes cache
+        """Get cached ticker data if available and not expired"""
+        if symbol in self.ticker_data:
+            cache_entry = self.ticker_data[symbol]
+            age = time.time() - cache_entry["timestamp"]
+            
+            if age < max_age:
+                return cache_entry["data"]
+        
+        return None
+
 def get_all_ticker_pages(max_pages=20, symbol_to_find=None):
     """
     Fetch ticker data from multiple pages
@@ -364,34 +503,6 @@ def check_model_file(model_path):
         logger.error(f"Model file not found at {model_path}")
         return False
 
-def install_cuda_support():
-    """
-    Install CUDA-enabled version of llama-cpp-python
-    
-    Returns:
-        Boolean indicating success
-    """
-    try:
-        logger.info("Installing CUDA-enabled llama-cpp-python...")
-        import sys
-        import subprocess
-        
-        # Uninstall current version
-        subprocess.check_call([sys.executable, "-m", "pip", "uninstall", "-y", "llama-cpp-python"])
-        
-        # Install with CUDA support
-        env = {"CMAKE_ARGS": "-DLLAMA_CUBLAS=on", "FORCE_CMAKE": "1"}
-        subprocess.check_call(
-            [sys.executable, "-m", "pip", "install", "llama-cpp-python"],
-            env=env
-        )
-        
-        logger.info("Successfully installed CUDA-enabled llama-cpp-python")
-        return True
-    except Exception as e:
-        logger.exception(f"Failed to install CUDA support: {str(e)}")
-        return False
-
 def initialize_llama(model_path):
     """
     Initialize the Llama model with GPU support and fallback to CPU
@@ -434,54 +545,74 @@ def initialize_llama(model_path):
             logger.exception(f"Error initializing Llama model on CPU: {str(e2)}")
             return None
 
-def chat_response(user_message, model_path="finance-chat.Q8_0.gguf"):
+def chat_response(user_message, context, model_path="finance-chat.Q8_0.gguf"):
     """
-    Generate a response to a user's financial query with detailed logging.
+    Generate a response to a user's financial query with context awareness
     
     Args:
         user_message: The user's query
+        context: ConversationContext object maintaining conversation state
         model_path: Path to the GGUF model file
         
     Returns:
-        Generated response string
+        Generated response string and detected symbols
     """
     logger.info(f"Processing user query: {user_message}")
     
-    # Check if query is specifically looking for a symbol
-    symbol_match = re.search(r'\b([A-Z]{1,5})\b', user_message)
-    target_symbol = None
+    # Get relevant context for this query
+    relevant_context = context.get_relevant_context(user_message)
+    logger.info(f"Relevant context: {relevant_context}")
     
-    # Check if the query is asking about investing
+    # Determine the active symbol for this query
+    active_symbol = relevant_context["active_symbol"]
+    detected_symbols = relevant_context["detected_symbols"]
+    
+    # If no active symbol was found in this query but we have a latest symbol
+    # and the query seems to refer to a previous entity, use the latest symbol
+    if not active_symbol and relevant_context["latest_symbol"] and "_is_referring_to_previous" in dir(context) and context._is_referring_to_previous(user_message):
+        active_symbol = relevant_context["latest_symbol"]
+        logger.info(f"Using previous symbol {active_symbol} based on context")
+        # Add to detected symbols so it's included in response context
+        if active_symbol not in detected_symbols:
+            detected_symbols.append(active_symbol)
+    
+    # Check if query is specifically looking for investment advice
     is_investment_query = any(term in user_message.lower() for term in [
         "invest", "buy", "sell", "worth", "stock", "good investment", 
         "should i", "portfolio", "holding", "position"
     ])
     
-    if symbol_match:
-        potential_symbol = symbol_match.group(1)
-        if len(potential_symbol) >= 2:  # Most stock symbols are at least 2 characters
-            target_symbol = potential_symbol
-            logger.info(f"Detected potential stock symbol in query: {target_symbol}")
-    
     # Prepare data collection
     ticker_summary = ""
     ticker_details = []
     
-    # If we have a target symbol, prioritize getting detailed info for it
-    if target_symbol:
-        logger.info(f"Getting detailed data for target symbol: {target_symbol}")
+    # If we have an active symbol, get detailed info for it
+    if active_symbol:
+        logger.info(f"Getting detailed data for active symbol: {active_symbol}")
         
-        # First, get real-time quote data
-        realtime_data = get_realtime_quote(target_symbol)
+        # Check for cached data first
+        combined_data = None
+        cached_data = context.get_cached_ticker_data(active_symbol)
         
-        # Then try to get standard ticker data
-        ticker_data = search_ticker_by_symbol(target_symbol, max_pages=5)
-        
-        # Extract and combine data
-        combined_data = extract_ticker_data(ticker_data, realtime_data)
+        if cached_data:
+            logger.info(f"Using cached data for {active_symbol}")
+            combined_data = cached_data
+        else:
+            # First, get real-time quote data
+            realtime_data = get_realtime_quote(active_symbol)
+            
+            # Then try to get standard ticker data
+            ticker_data = search_ticker_by_symbol(active_symbol, max_pages=5)
+            
+            # Extract and combine data
+            combined_data = extract_ticker_data(ticker_data, realtime_data)
+            
+            # Cache the combined data for future use
+            if combined_data:
+                context.add_ticker_data(active_symbol, combined_data)
         
         if combined_data:
-            symbol = combined_data.get("symbol", target_symbol)
+            symbol = combined_data.get("symbol", active_symbol)
             ticker_details.append(combined_data)
             
             # Get ESG data for this symbol
@@ -501,7 +632,7 @@ def chat_response(user_message, model_path="finance-chat.Q8_0.gguf"):
                 esg_text = "No ESG data available"
                 logger.warning(f"No ESG data found for {symbol}")
             
-            # Build comprehensive summary for the target symbol
+            # Build comprehensive summary for the active symbol
             price = combined_data.get("price", "N/A")
             change_pct = combined_data.get("change_pct", "N/A")
             name = combined_data.get("name", symbol)
@@ -533,8 +664,8 @@ def chat_response(user_message, model_path="finance-chat.Q8_0.gguf"):
             
             ticker_summary += detail_text + " "
         else:
-            logger.warning(f"No data found for target symbol: {target_symbol}")
-            ticker_summary += f"No detailed data available for {target_symbol}. "
+            logger.warning(f"No data found for active symbol: {active_symbol}")
+            ticker_summary += f"No detailed data available for {active_symbol}. "
     
     # Only get additional tickers if explicitly requested or if query is about comparing stocks
     additional_tickers_requested = any(term in user_message.lower() for term in [
@@ -543,7 +674,7 @@ def chat_response(user_message, model_path="finance-chat.Q8_0.gguf"):
     ])
     
     # Get a few general tickers ONLY if no specific ticker was found AND the query explicitly requests comparison
-    if not target_symbol and additional_tickers_requested:
+    if not active_symbol and additional_tickers_requested:
         logger.info("Getting additional tickers for comparison as requested")
         general_tickers = get_all_ticker_pages(max_pages=1)[:3]
         
@@ -572,8 +703,8 @@ def chat_response(user_message, model_path="finance-chat.Q8_0.gguf"):
                         ticker_summary += f"ESG Score: {esg_score}; "
     
     if not ticker_summary:
-        if target_symbol:
-            ticker_summary = f"No information available for {target_symbol}."
+        if active_symbol:
+            ticker_summary = f"No information available for {active_symbol}."
         else:
             ticker_summary = "No specific ticker symbol detected in your query. Please include a stock symbol (e.g., AAPL for Apple) if you want stock information."
         logger.warning("No ticker data could be retrieved")
@@ -584,7 +715,10 @@ def chat_response(user_message, model_path="finance-chat.Q8_0.gguf"):
     # Initialize the model with GPU support
     llama = initialize_llama(model_path)
     if not llama:
-        return "I'm sorry, but I'm unable to process your request at the moment due to a technical issue with the language model."
+        return "I'm sorry, but I'm unable to process your request at the moment due to a technical issue with the language model.", detected_symbols
+    
+    # Include conversation history in the prompt
+    conversation_summary = relevant_context["recent_summary"]
     
     # Customize prompt based on query type
     prompt_instructions = ""
