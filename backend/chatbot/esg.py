@@ -434,7 +434,7 @@ def initialize_llama(model_path):
             logger.exception(f"Error initializing Llama model on CPU: {str(e2)}")
             return None
 
-def chat_response(user_message, model_path="finance-chat.Q5_K_M.gguf"):
+def chat_response(user_message, model_path="finance-chat.Q8_0.gguf"):
     """
     Generate a response to a user's financial query with detailed logging.
     
@@ -703,7 +703,7 @@ def main():
     print("Type 'exit' or 'quit' to end the session")
     
     # Check if model exists and download if needed
-    model_filename = "finance-chat.Q5_K_M.gguf"
+    model_filename = "finance-chat.Q8_0.gguf"
     if not download_model_if_needed(model_filename):
         print("Failed to download model file. Cannot continue.")
         return
