@@ -4,19 +4,19 @@
     "description": "Carbon footprint tracking and offset dApp",
     "main": "index.js",
     "scripts": {
-      "dev": "lite-server"
+        "dev": "lite-server"
     },
     "keywords": [
-      "blockchain",
-      "ethereum",
-      "carbon",
-      "offset"
+        "blockchain",
+        "ethereum",
+        "carbon",
+        "offset"
     ],
     "author": "",
     "license": "ISC",
     "dependencies": {
-      "@openzeppelin/contracts": "^4.9.3",
-      "web3": "^1.10.0",
-      "lite-server": "^2.6.1"
+        "@openzeppelin/contracts": "^4.9.3",
+        "lite-server": "^2.6.1",
+        "web3": "^1.10.4"
     }
-  }
+}
