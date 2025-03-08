@@ -17,10 +17,12 @@ import { useEffect, useState } from "react"
 import {fetchStackData} from '../api/fetchStockData.js'
 import Home from "@/components/home.jsx"
 import FinancialSentimentDashboard from "./FinancialSentimentDashboard.jsx"
+import { ChatInterface } from "@/components/ChatInterface.jsx"
 export default function Dashboard() {
   const pages ={
     '/dashboard':<Home/>,
-    '/news':<FinancialSentimentDashboard/>
+    '/news':<FinancialSentimentDashboard/>,
+    '/Ai': <ChatInterface/>
   }
   const[select,setSelect] = useState('/dashboard');
 
