@@ -1,21 +1,32 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ChatMessage } from './ChatMessage';
 import { ChatHeader } from './ChatHeader';
-
-
-
+import axios from 'axios';
 
 export const ChatInterface = () => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
- 
+  const backendUrl = "http://10.18.0.143:2000/chat"; // Replace with your backend URL
 
+  // Load chat history from localStorage when the component mounts
+  useEffect(() => {
+    const savedMessages = localStorage.getItem('chatHistory');
+    if (savedMessages) {
+      setMessages(JSON.parse(savedMessages));
+    }
+  }, []);
+
+  // Save messages to localStorage whenever the messages state changes
+  useEffect(() => {
+    localStorage.setItem('chatHistory', JSON.stringify(messages));
+  }, [messages]);
+
+  // Scroll to the bottom of the chat when new messages are added
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -25,9 +36,8 @@ export const ChatInterface = () => {
   };
 
   const generateResponse = async (userMessage) => {
-   
     setIsLoading(true);
-    
+
     // Create the user message
     const newUserMessage = {
       id: Date.now().toString(),
@@ -35,49 +45,51 @@ export const ChatInterface = () => {
       role: 'user',
       timestamp: new Date(),
     };
-    
-    setMessages(prev => [...prev, newUserMessage]);
-    
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Example responses
-    const responses = [
-      "I understand your query and would be happy to assist you with that.",
-      "That's an interesting question. Let me think about that for a moment...",
-      "Based on my knowledge, I can provide the following information about your request.",
-      "I've analyzed your message and here's what I think might help you most.",
-      "Let me provide some insights on that topic.",
-    ];
-    
-    const detailedResponses = [
-      "I've analyzed your question thoroughly. The concept you're asking about has several dimensions worth exploring. First, consider the historical context which provides important background. Second, there are multiple perspectives to consider from different fields. Finally, recent developments have changed how we understand this area significantly. Would you like me to elaborate on any particular aspect?",
-      "This is a fascinating area to explore. There are several key points that might be helpful for you to know: (1) The underlying principles are based on well-established research, (2) There are practical applications in various contexts, (3) Experts generally agree on the fundamentals, though there are some areas of ongoing debate. I can provide more specific information if you have a particular angle you're interested in.",
-      "Thank you for bringing up this topic. I can offer some valuable insights here: The primary considerations involve balancing multiple factors, each with their own importance. Best practices have evolved significantly over time, and what works best often depends on your specific situation and goals. I'm happy to discuss more targeted advice if you can share more details about your specific needs.",
-    ];
-    
-    // Randomly select a response
-    const randomResponse = Math.random() > 0.7 
-      ? detailedResponses[Math.floor(Math.random() * detailedResponses.length)]
-      : responses[Math.floor(Math.random() * responses.length)];
-    
-    // Create the AI response
-    const newAIMessage= {
-      id: (Date.now() + 1).toString(),
-      content: randomResponse,
-      role: 'assistant',
-      timestamp: new Date(),
-    };
-    
-    setMessages(prev => [...prev, newAIMessage]);
-    setIsLoading(false);
+
+    // Add the user message to the chat history
+    const updatedMessages = [...messages, newUserMessage];
+    setMessages(updatedMessages);
+
+    try {
+      // Send the user's message and the entire chat history to the backend
+      const response = await axios.post(backendUrl, {
+        message: userMessage,
+        history: updatedMessages, // Include the chat history
+      });
+      console.log(response);
+
+      // Create the AI response
+      const newAIMessage = {
+        id: (Date.now() + 1).toString(),
+        content: response.data.response,
+        role: 'assistant',
+        timestamp: new Date(),
+      };
+
+      // Add the AI response to the chat history
+      setMessages((prev) => [...prev, newAIMessage]);
+    } catch (error) {
+      console.error("Error communicating with the backend:", error);
+
+      // Show an error message if the backend fails
+      const errorMessage = {
+        id: (Date.now() + 1).toString(),
+        content: "Sorry, I encountered an error. Please try again.",
+        role: 'assistant',
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
     e?.preventDefault();
-    
+
     if (!inputValue.trim()) return;
-    
+
     await generateResponse(inputValue);
     setInputValue('');
   };
@@ -89,10 +101,16 @@ export const ChatInterface = () => {
     }
   };
 
+  // Clear chat history
+  const clearChatHistory = () => {
+    localStorage.removeItem('chatHistory');
+    setMessages([]);
+  };
+
   return (
     <div className="flex flex-col h-screen max-h-screen">
       <ChatHeader />
-      
+
       <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
@@ -102,28 +120,28 @@ export const ChatInterface = () => {
                 Start a conversation with our AI. Ask questions, request information, or just chat.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                <Button 
+                <Button
                   variant="outline"
                   className="text-left justify-start h-auto py-3"
                   onClick={() => setInputValue("What can you help me with?")}
                 >
                   "What can you help me with?"
                 </Button>
-                <Button 
+                <Button
                   variant="outline"
                   className="text-left justify-start h-auto py-3"
                   onClick={() => setInputValue("Tell me an interesting fact")}
                 >
                   "Tell me an interesting fact"
                 </Button>
-                <Button 
+                <Button
                   variant="outline"
                   className="text-left justify-start h-auto py-3"
                   onClick={() => setInputValue("How does AI technology work?")}
                 >
                   "How does AI technology work?"
                 </Button>
-                <Button 
+                <Button
                   variant="outline"
                   className="text-left justify-start h-auto py-3"
                   onClick={() => setInputValue("Give me ideas for a project")}
@@ -139,11 +157,14 @@ export const ChatInterface = () => {
               <ChatMessage key={message.id} message={message} />
             ))}
             {isLoading && (
-              <div className="self-start bg-black/80 text-white rounded-2xl p-4 max-w-[80%] animate-pulse-light">
-                <div className="loading-dots">
-                  <span></span>
-                  <span></span>
-                  <span></span>
+              <div className="self-start bg-black/80 text-white rounded-2xl p-4 max-w-[80%]">
+                <div className="flex items-center gap-2">
+                  <div className="loading-dots">
+                    <span className="dot"></span>
+                    <span className="dot"></span>
+                    <span className="dot"></span>
+                  </div>
+                  <span>Thinking...</span>
                 </div>
               </div>
             )}
@@ -151,7 +172,7 @@ export const ChatInterface = () => {
           </>
         )}
       </div>
-      
+
       <div className="border-t border-gray-100 p-4">
         <form onSubmit={handleSubmit} className="flex items-end gap-2">
           <div className="flex-1 relative">
@@ -163,20 +184,20 @@ export const ChatInterface = () => {
               className="resize-none min-h-[60px] max-h-[200px] pr-12"
               disabled={isLoading}
             />
-            <Button 
+            <Button
               type="submit"
               size="icon"
               className="absolute bottom-2 right-2"
               disabled={!inputValue.trim() || isLoading}
             >
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
                 strokeWidth="2"
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 className="size-4"
               >
                 <path d="m22 2-7 20-4-9-9-4Z" />
@@ -189,6 +210,13 @@ export const ChatInterface = () => {
         <p className="text-xs text-muted-foreground mt-2 text-center">
           MintAI may produce inaccurate information about people, places, or facts.
         </p>
+        <Button
+          variant="outline"
+          className="w-full mt-2"
+          onClick={clearChatHistory}
+        >
+          Clear Chat History
+        </Button>
       </div>
     </div>
   );

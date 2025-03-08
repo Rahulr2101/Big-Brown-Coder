@@ -27,6 +27,7 @@ export const ChatMessage = ({ message }) => {
     }
   };
   
+  
   return (
     <motion.div
       initial="hidden"
