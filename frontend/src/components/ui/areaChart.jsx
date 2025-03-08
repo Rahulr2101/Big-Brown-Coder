@@ -6,7 +6,48 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { fetchStackData } from "@/api/fetchStockData";
 
-const availableStocks = ["AAPL", "MSFT", "GOOGL", "AMZN", "META"];
+const availableStocks = [
+  "AAPL", // Apple
+  "MSFT", // Microsoft
+  "GOOGL", // Google (Alphabet)
+  "AMZN", // Amazon
+  "META", // Meta (Facebook)
+  "TSLA", // Tesla
+  "NFLX", // Netflix
+  "NVDA", // NVIDIA
+  "AMD", // AMD (Advanced Micro Devices)
+  "INTC", // Intel
+  "SPY", // S&P 500 ETF
+  "DIS", // Disney
+  "V", // Visa
+  "PYPL", // PayPal
+  "BA", // Boeing
+  "JNJ", // Johnson & Johnson
+  "PFE", // Pfizer
+  "VZ", // Verizon
+  "GS", // Goldman Sachs
+  "IBM", // IBM
+  "WMT", // Walmart
+  "KO", // Coca-Cola
+  "PEP", // PepsiCo
+  "BABA", // Alibaba
+  "MCD", // McDonald's
+  "ORCL", // Oracle
+  "GS", // Goldman Sachs
+  "XOM", // Exxon Mobil
+  "CVX", // Chevron
+  "UNH", // UnitedHealth Group
+  "AMD", // AMD
+  "CSCO", // Cisco Systems
+  "SAP", // SAP
+  "SQ", // Square
+  "CRM", // Salesforce
+  "LUV", // Southwest Airlines
+  "GM", // General Motors
+  "F", // Ford Motor Company
+  "GE", // General Electric
+];
+
 
 const sampleData = {};
 
@@ -172,8 +213,8 @@ export default function MultiStockChart() {
   }
 
   return (
-    <Card>
-      <CardHeader className="flex flex-col items-stretch space-y-2 border-b p-0">
+    <Card className="shadow-lg">
+      <CardHeader className="  flex-col items-stretch space-y-2 border-b p-0">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5">
           <CardTitle>Stock Comparison</CardTitle>
           <CardDescription>
