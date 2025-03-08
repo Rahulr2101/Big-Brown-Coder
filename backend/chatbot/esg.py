@@ -651,81 +651,7 @@ def chat_response(user_message, model_path="finance-chat.Q5_K_M.gguf"):
         logger.exception(f"Error generating response with Llama: {str(e)}")
         return "I apologize, but I encountered an error while processing your request. Please try again with a different query."
 
-def test_ticker_api():
-    """Test the Yahoo Finance Ticker API to verify connectivity"""
-    print("Testing Yahoo Finance Ticker API...")
-    try:
-        headers = YAHOO_TICKERS_HEADERS.copy()
-        
-        response = requests.get(YAHOO_TICKERS_URL, headers=headers, timeout=10)
-        print(f"Ticker API Status Code: {response.status_code}")
-        print("Ticker API Response Headers:")
-        print(response.headers)
-        try:
-            data = response.json()
-            print("Ticker API JSON Response:")
-            print(json.dumps(data, indent=2))
-        except json.JSONDecodeError as e:
-            print("JSON decode error:", e)
-            print("Response content (first 200 characters):")
-            print(response.content[:200])
-    except Exception as e:
-        print("Exception during ticker API test:", str(e))
-
-def test_esg_api(symbol="AAPL"):
-    """Test the ESG API to verify connectivity"""
-    print(f"\nTesting ESG API for symbol: {symbol}...")
-    try:
-        url = ESG_API_URL_TEMPLATE.format(symbol=symbol)
-        headers = ESG_API_HEADERS.copy()
-        
-        response = requests.get(url, headers=headers, timeout=10)
-        print(f"ESG API Status Code for {symbol}: {response.status_code}")
-        print("ESG API Response Headers:")
-        print(response.headers)
-        try:
-            data = response.json()
-            print(f"ESG API JSON Response for {symbol}:")
-            print(json.dumps(data, indent=2))
-        except json.JSONDecodeError as e:
-            print("JSON decode error for ESG API:", e)
-            print("Response content (first 200 characters):")
-            print(response.content[:200])
-    except Exception as e:
-        print(f"Exception during ESG API test for {symbol}:", str(e))
-
-def test_realtime_quote_api(symbol="AAPL"):
-    """Test the Real-time Quote API to verify connectivity"""
-    print(f"\nTesting Real-time Quote API for symbol: {symbol}...")
-    try:
-        params = {
-            "ticker": symbol,
-            "type": "STOCKS"
-        }
-        
-        response = requests.get(
-            REALTIME_QUOTE_URL, 
-            headers=REALTIME_QUOTE_HEADERS,
-            params=params,
-            timeout=10
-        )
-        
-        print(f"Real-time Quote API Status Code for {symbol}: {response.status_code}")
-        print("Response Headers:")
-        print(response.headers)
-        
-        try:
-            data = response.json()
-            print(f"Real-time Quote API JSON Response for {symbol}:")
-            print(json.dumps(data, indent=2))
-        except json.JSONDecodeError as e:
-            print("JSON decode error for Real-time Quote API:", e)
-            print("Response content (first 200 characters):")
-            print(response.content[:200])
-    except Exception as e:
-        print(f"Exception during Real-time Quote API test for {symbol}:", str(e))
-
-def download_model_if_needed(model_filename="finance-chat.Q5_K_M.gguf"):
+def download_model_if_needed(model_filename="finance-chat.Q8_0.gguf"):
     """Download the model file if it doesn't exist"""
     if not os.path.exists(model_filename):
         try:
@@ -781,16 +707,6 @@ def main():
     if not download_model_if_needed(model_filename):
         print("Failed to download model file. Cannot continue.")
         return
-    
-    # Check if APIs are working
-    print("\nTesting APIs...")
-    try:
-        # Only test with a small number of requests
-        test_ticker_api()
-        test_esg_api("AAPL")
-    except Exception as e:
-        print(f"API test error: {str(e)}")
-        print("Continuing anyway...")
     
     print("\nChatbot ready! Enter your financial questions.")
     print("-" * 50)
