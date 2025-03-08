@@ -27,6 +27,10 @@ YAHOO_TICKERS_HEADERS = {
     "Accept-Encoding": "identity"
 }
 
+# Real-time quote API
+REALTIME_QUOTE_URL = "https://yahoo-finance15.p.rapidapi.com/api/v1/markets/quote"
+REALTIME_QUOTE_HEADERS = YAHOO_TICKERS_HEADERS  # Same headers as tickers API
+
 ESG_API_URL_TEMPLATE = "https://yahoo-finance127.p.rapidapi.com/esg-scores/{symbol}"
 ESG_API_HEADERS = {
     "x-rapidapi-host": "yahoo-finance127.p.rapidapi.com",
@@ -130,6 +134,66 @@ def get_all_ticker_pages(max_pages=20, symbol_to_find=None):
     logger.info(f"Total tickers collected: {len(all_tickers)}")
     return all_tickers
 
+def get_realtime_quote(symbol):
+    """
+    Fetch real-time quote data for a specific ticker symbol
+    
+    Args:
+        symbol: Stock symbol to fetch quote for (e.g., "AAPL")
+        
+    Returns:
+        Dictionary with real-time quote data or empty dict if not found
+    """
+    logger.info(f"Fetching real-time quote for: {symbol}")
+    
+    try:
+        params = {
+            "ticker": symbol,
+            "type": "STOCKS"
+        }
+        
+        # Add retry logic
+        max_retries = 3
+        retry_delay = 2  # seconds
+        
+        for attempt in range(max_retries):
+            try:
+                response = requests.get(
+                    REALTIME_QUOTE_URL, 
+                    headers=REALTIME_QUOTE_HEADERS,
+                    params=params,
+                    timeout=10
+                )
+                
+                logger.info(f"Real-time quote API status code for {symbol}: {response.status_code}")
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    logger.info(f"Real-time quote data keys for {symbol}: {list(data.keys() if isinstance(data, dict) else ['not a dict'])}")
+                    return data
+                
+                elif response.status_code == 429:  # Rate limit exceeded
+                    retry_after = int(response.headers.get('Retry-After', retry_delay * (attempt + 1)))
+                    logger.warning(f"Rate limit hit on real-time quote for {symbol}, waiting {retry_after} seconds")
+                    time.sleep(retry_after)
+                
+                else:
+                    logger.error(f"Real-time quote API error for {symbol}: Status {response.status_code}")
+                    logger.error(f"Response: {response.text[:500]}...")
+                    return {}
+                    
+            except requests.exceptions.RequestException as e:
+                logger.error(f"Request exception on real-time quote for {symbol}, attempt {attempt+1}: {str(e)}")
+                if attempt < max_retries - 1:
+                    time.sleep(retry_delay * (attempt + 1))
+                else:
+                    logger.error(f"Max retries reached for real-time quote on {symbol}")
+                    return {}
+        
+    except Exception as e:
+        logger.exception(f"Unexpected error fetching real-time quote for {symbol}: {str(e)}")
+        return {}
+
 def search_ticker_by_symbol(symbol, tickers=None, max_pages=3):
     """
     Search for a specific ticker symbol
@@ -213,6 +277,74 @@ def get_esg_data(symbol):
     except Exception as e:
         logger.exception(f"Unexpected error fetching ESG data for {symbol}: {str(e)}")
         return {}
+
+def extract_ticker_data(ticker_data, realtime_data):
+    """
+    Extract and combine ticker data from both APIs
+    
+    Args:
+        ticker_data: Data from the tickers API
+        realtime_data: Data from the real-time quote API
+        
+    Returns:
+        Dictionary with combined ticker information
+    """
+    result = {}
+    
+    # Extract basic ticker info
+    if ticker_data:
+        result["symbol"] = ticker_data.get("symbol", "N/A")
+        result["price"] = ticker_data.get("lastsale", "N/A")
+        result["change_pct"] = ticker_data.get("pctchange", "N/A")
+        result["name"] = ticker_data.get("name", "N/A")
+    
+    # Enhance with real-time data if available
+    if realtime_data:
+        # Navigate through the response structure to get to the ticker data
+        quote_data = None
+        
+        # Try to find the quote data in the response
+        if isinstance(realtime_data, dict):
+            if "data" in realtime_data and isinstance(realtime_data["data"], dict):
+                quote_data = realtime_data["data"]
+            elif "body" in realtime_data and isinstance(realtime_data["body"], dict):
+                quote_data = realtime_data["body"]
+        
+        if quote_data:
+            # Override basic info with real-time data
+            if "symbol" in quote_data:
+                result["symbol"] = quote_data.get("symbol", result.get("symbol", "N/A"))
+            
+            # Price data
+            if "regularMarketPrice" in quote_data:
+                result["price"] = quote_data.get("regularMarketPrice", result.get("price", "N/A"))
+            
+            # Change percentage
+            if "regularMarketChangePercent" in quote_data:
+                change_pct = quote_data.get("regularMarketChangePercent")
+                if isinstance(change_pct, (int, float)):
+                    result["change_pct"] = f"{change_pct:.2f}%"
+                else:
+                    result["change_pct"] = str(change_pct)
+            
+            # Additional real-time data
+            result["open"] = quote_data.get("regularMarketOpen", "N/A")
+            result["high"] = quote_data.get("regularMarketDayHigh", "N/A")
+            result["low"] = quote_data.get("regularMarketDayLow", "N/A")
+            result["volume"] = quote_data.get("regularMarketVolume", "N/A")
+            result["market_cap"] = quote_data.get("marketCap", "N/A")
+            
+            # 52-week data
+            result["52w_high"] = quote_data.get("fiftyTwoWeekHigh", "N/A")
+            result["52w_low"] = quote_data.get("fiftyTwoWeekLow", "N/A")
+            
+            # Company info
+            if "longName" in quote_data:
+                result["name"] = quote_data.get("longName", result.get("name", "N/A"))
+            result["sector"] = quote_data.get("sector", "N/A")
+            result["industry"] = quote_data.get("industry", "N/A")
+    
+    return result
 
 def check_model_file(model_path):
     """
@@ -319,38 +451,43 @@ def chat_response(user_message, model_path="finance-chat.Q5_K_M.gguf"):
     symbol_match = re.search(r'\b([A-Z]{1,5})\b', user_message)
     target_symbol = None
     
+    # Check if the query is asking about investing
+    is_investment_query = any(term in user_message.lower() for term in [
+        "invest", "buy", "sell", "worth", "stock", "good investment", 
+        "should i", "portfolio", "holding", "position"
+    ])
+    
     if symbol_match:
         potential_symbol = symbol_match.group(1)
         if len(potential_symbol) >= 2:  # Most stock symbols are at least 2 characters
             target_symbol = potential_symbol
             logger.info(f"Detected potential stock symbol in query: {target_symbol}")
     
-    # Fetch all ticker data or search for specific symbol
-    if target_symbol:
-        # First, try to directly get the specific ticker
-        ticker_data = search_ticker_by_symbol(target_symbol, max_pages=20)
-        if ticker_data:
-            tickers = [ticker_data]
-        else:
-            # If not found, get general top tickers
-            tickers = get_all_ticker_pages(max_pages=2)[:3]
-    else:
-        # No specific symbol, get top tickers
-        tickers = get_all_ticker_pages(max_pages=2)[:3]
-    
-    # Prepare ticker summary for prompt
+    # Prepare data collection
     ticker_summary = ""
-    for ticker in tickers:
-        symbol = ticker.get("symbol", "N/A")
-        price = ticker.get("lastsale", "N/A")
-        change_pct = ticker.get("pctchange", "N/A")
+    ticker_details = []
+    
+    # If we have a target symbol, prioritize getting detailed info for it
+    if target_symbol:
+        logger.info(f"Getting detailed data for target symbol: {target_symbol}")
         
-        # Log ticker details
-        logger.info(f"Including ticker in summary: {symbol} @ {price} ({change_pct})")
+        # First, get real-time quote data
+        realtime_data = get_realtime_quote(target_symbol)
         
-        # Only fetch ESG data for the target symbol or for display tickers if no target
-        if symbol == target_symbol or not target_symbol:
+        # Then try to get standard ticker data
+        ticker_data = search_ticker_by_symbol(target_symbol, max_pages=5)
+        
+        # Extract and combine data
+        combined_data = extract_ticker_data(ticker_data, realtime_data)
+        
+        if combined_data:
+            symbol = combined_data.get("symbol", target_symbol)
+            ticker_details.append(combined_data)
+            
+            # Get ESG data for this symbol
             esg_data = get_esg_data(symbol)
+            esg_text = ""
+            
             if esg_data and "totalEsg" in esg_data:
                 esg_score = esg_data["totalEsg"].get("fmt", "N/A")
                 env_score = esg_data.get("environmentScore", {}).get("fmt", "N/A")
@@ -363,10 +500,74 @@ def chat_response(user_message, model_path="finance-chat.Q5_K_M.gguf"):
             else:
                 esg_text = "No ESG data available"
                 logger.warning(f"No ESG data found for {symbol}")
+            
+            # Build comprehensive summary for the target symbol
+            price = combined_data.get("price", "N/A")
+            change_pct = combined_data.get("change_pct", "N/A")
+            name = combined_data.get("name", symbol)
+            
+            # Include real-time data if available
+            detail_text = f"{symbol} ({name}): Price ${price} ({change_pct})"
+            
+            if "open" in combined_data and combined_data["open"] != "N/A":
+                detail_text += f"; Open: ${combined_data['open']}"
+            if "high" in combined_data and combined_data["high"] != "N/A":
+                detail_text += f"; High: ${combined_data['high']}"
+            if "low" in combined_data and combined_data["low"] != "N/A":
+                detail_text += f"; Low: ${combined_data['low']}"
+            if "volume" in combined_data and combined_data["volume"] != "N/A":
+                detail_text += f"; Volume: {combined_data['volume']}"
+            if "market_cap" in combined_data and combined_data["market_cap"] != "N/A":
+                detail_text += f"; Market Cap: ${combined_data['market_cap']}"
+            if "52w_high" in combined_data and combined_data["52w_high"] != "N/A":
+                detail_text += f"; 52w High: ${combined_data['52w_high']}"
+            if "52w_low" in combined_data and combined_data["52w_low"] != "N/A":
+                detail_text += f"; 52w Low: ${combined_data['52w_low']}"
+            if "sector" in combined_data and combined_data["sector"] != "N/A":
+                detail_text += f"; Sector: {combined_data['sector']}"
+            if "industry" in combined_data and combined_data["industry"] != "N/A":
+                detail_text += f"; Industry: {combined_data['industry']}"
+            
+            # Add ESG data to summary
+            detail_text += f"; {esg_text}"
+            
+            ticker_summary += detail_text + " "
         else:
-            esg_text = "ESG data not fetched"
+            logger.warning(f"No data found for target symbol: {target_symbol}")
+            ticker_summary += f"No detailed data available for {target_symbol}. "
+    
+    # Get a few general tickers if needed (no target or for comparison)
+    if not target_symbol or (is_investment_query and len(ticker_details) < 3):
+        logger.info("Getting additional tickers for context")
+        general_tickers = get_all_ticker_pages(max_pages=1)[:3]
         
-        ticker_summary += f"{symbol}: Price {price} ({change_pct}); {esg_text}. "
+        for ticker in general_tickers:
+            symbol = ticker.get("symbol", "N/A")
+            
+            # Skip if this is the same as our target symbol
+            if symbol == target_symbol:
+                continue
+                
+            # Get real-time data for this ticker too
+            realtime_data = get_realtime_quote(symbol)
+            combined_data = extract_ticker_data(ticker, realtime_data)
+            
+            if combined_data:
+                ticker_details.append(combined_data)
+                
+                # Add basic info to the summary
+                price = combined_data.get("price", "N/A")
+                change_pct = combined_data.get("change_pct", "N/A")
+                name = combined_data.get("name", symbol)
+                
+                ticker_summary += f"{symbol} ({name}): Price ${price} ({change_pct}); "
+                
+                # Only get ESG for a small set of tickers to avoid API limits
+                if len(ticker_details) <= 3:
+                    esg_data = get_esg_data(symbol)
+                    if esg_data and "totalEsg" in esg_data:
+                        esg_score = esg_data["totalEsg"].get("fmt", "N/A")
+                        ticker_summary += f"ESG Score: {esg_score}; "
     
     if not ticker_summary:
         ticker_summary = "No ticker information available."
@@ -380,13 +581,28 @@ def chat_response(user_message, model_path="finance-chat.Q5_K_M.gguf"):
     if not llama:
         return "I'm sorry, but I'm unable to process your request at the moment due to a technical issue with the language model."
     
+    # Customize prompt based on query type
+    prompt_instructions = ""
+    if is_investment_query:
+        prompt_instructions = (
+            "The user is asking about investment advice. Analyze the current market data provided below, "
+            "and give a balanced assessment that considers both financial performance and ESG factors. "
+            "Include pros and cons, potential risks, and suggest sustainable alternatives if appropriate. "
+            "Focus on educational information rather than direct financial advice."
+        )
+    else:
+        prompt_instructions = (
+            "Answer the following financial query by providing a detailed analysis based on the real-time "
+            "market data below. Include relevant ESG (Environmental, Social, Governance) considerations "
+            "and focus on clear, actionable information."
+        )
+    
     # Construct the enriched prompt
+    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
     enriched_prompt = (
-        "Answer the following financial query by providing a detailed analysis, "
-        "recommendations for greener and sustainable alternatives, and insights on sustainable finance. "
-        "Focus on clear, actionable financial Q&A while incorporating the data provided below.\n\n"
+        f"{prompt_instructions}\n\n"
         f"User Query: {user_message}\n\n"
-        f"Ticker and ESG Information: {ticker_summary}\n\n"
+        f"Current Market Data (as of {timestamp}):\n{ticker_summary}\n\n"
         "Answer:"
     )
     
@@ -472,6 +688,37 @@ def test_esg_api(symbol="AAPL"):
             print(response.content[:200])
     except Exception as e:
         print(f"Exception during ESG API test for {symbol}:", str(e))
+
+def test_realtime_quote_api(symbol="AAPL"):
+    """Test the Real-time Quote API to verify connectivity"""
+    print(f"\nTesting Real-time Quote API for symbol: {symbol}...")
+    try:
+        params = {
+            "ticker": symbol,
+            "type": "STOCKS"
+        }
+        
+        response = requests.get(
+            REALTIME_QUOTE_URL, 
+            headers=REALTIME_QUOTE_HEADERS,
+            params=params,
+            timeout=10
+        )
+        
+        print(f"Real-time Quote API Status Code for {symbol}: {response.status_code}")
+        print("Response Headers:")
+        print(response.headers)
+        
+        try:
+            data = response.json()
+            print(f"Real-time Quote API JSON Response for {symbol}:")
+            print(json.dumps(data, indent=2))
+        except json.JSONDecodeError as e:
+            print("JSON decode error for Real-time Quote API:", e)
+            print("Response content (first 200 characters):")
+            print(response.content[:200])
+    except Exception as e:
+        print(f"Exception during Real-time Quote API test for {symbol}:", str(e))
 
 def download_model_if_needed(model_filename="finance-chat.Q5_K_M.gguf"):
     """Download the model file if it doesn't exist"""
