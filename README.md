@@ -33,11 +33,8 @@ Traditional financial platforms often provide only raw market data or isolated E
 Our project, PayMint, bridges this gap by integrating real‑time financial data, ESG metrics, and blockchain-based carbon offset solutions into a single, unified platform accessible by virtually anyone. By leveraging APIs for live market and sustainability data and an AI-powered analysis engine/chatbot that was built on a quantized Llama model, PayMint delivers personalized investment recommendations. PayMint aims to balance profitability with environmental impact. Additionally, we enable users to track their carbon footprints and directly purchase tokenized carbon offsets on Ethereum, thereby letting investors make informed, sustainable decisions that contribute to a greener future.
 
 ### Demo
-[![Project Demo](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
-_Replace VIDEO_ID with your YouTube video ID or provide an alternative demo link_
+![Project Demo](https://youtu.be/ZQucrem36os)
 
-### Live Project
-[Project Name](https://your-project-url.com)
 
 ## Technical Implementation
 
@@ -148,23 +145,22 @@ Still working on it :)
 
 ### Challenges Faced
 _Discuss technical challenges and how you overcame them_
+- First time working with blockchain technologies so we had to read a learn and navigate ourselves through the tech in a short span of time
+- Due to lack of compute on our side, we had to learn to work with quantized models via yt videos and documentations on the go and made it possible to produce highly accurate results
 
 ### Future Enhancements
 _Share your vision for future development_
 
-### References (if any)
-- [Reference 1](link)
-- [Reference 2](link)
-
----
+- Full fledged mobile app for expense tracking
+- Advanced and comphrehensive screener
+- Deployment with good compute and resources
 
 ### Submission Checklist
-- [ ] Completed all sections of this README
-- [ ] Added project demo video
-- [ ] Provided live project link
+- [*] Completed all sections of this README
+- [*] Added project demo video
 - [*] Ensured all team members are listed
-- [ ] Included setup instructions
-- [ ] Submitted final code to repository
+- [*] Included setup instructions
+- [*] Submitted final code to repository
 
 ---
 
