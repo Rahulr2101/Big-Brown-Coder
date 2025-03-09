@@ -107,8 +107,8 @@ const Features = () => {
     },
     {
       icon: <Zap className="w-6 h-6" />,
-      title: "Instant Transfers",
-      description: "Send and receive money instantly between accounts or to friends and family, with zero fees for platform users."
+      title: "Instant Sentiment Analysis on Current News",
+      description: "Analyze public sentiment on current news events to gain insights into societal reactions, trends, and opinions, helping you understand how people feel about major topics and issues in real-time."
     }
   ];
 

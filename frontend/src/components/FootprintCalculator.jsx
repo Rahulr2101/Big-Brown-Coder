@@ -1,18 +1,16 @@
-
-import React, { useState } from "react";
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Leaf } from "lucide-react";
 
-
-
 const FootprintCalculator = ({
   inputs,
   handleChange,
   calculateFootprint,
   footprintEstimate,
+  isLoading,
 }) => {
   const formatInputLabel = (key) => {
     return key
@@ -64,7 +62,7 @@ const FootprintCalculator = ({
                     id={key}
                     type="number"
                     name={key}
-                    value={inputs[key ]}
+                    value={inputs[key]}
                     onChange={handleChange}
                     className="form-input pr-16"
                     placeholder="0"
@@ -88,9 +86,10 @@ const FootprintCalculator = ({
 
           <Button
             type="submit"
-            className="w-full bg-eco hover:bg-eco-dark text-white"
+            className="w-full bg-eco hover:bg-eco-dark shadow-lg bg-secondary text-black"
+            disabled={isLoading}
           >
-            Calculate Footprint
+            {isLoading ? "Calculating..." : "Calculate Footprint"}
           </Button>
         </form>
       </CardContent>

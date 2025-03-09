@@ -1,19 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Globe, TrendingUp } from "lucide-react";
-
-
+import { toast } from "react-toastify";
 
 const OffsetPurchase = ({
   tokenPrice,
   recommendedOffsets,
   account,
+  purchaseOffsets,
+  isLoading
 }) => {
   const [offsetAmount, setOffsetAmount] = useState(recommendedOffsets || 1);
+  
+  // Update offset amount when recommended amount changes
+  useEffect(() => {
+    if (recommendedOffsets) {
+      setOffsetAmount(recommendedOffsets);
+    }
+  }, [recommendedOffsets]);
   
   const handleSliderChange = (value) => {
     setOffsetAmount(value[0]);
@@ -25,7 +32,7 @@ const OffsetPurchase = ({
       return;
     }
     
-    toast.success(`Successfully purchased ${offsetAmount} carbon offset tokens!`);
+    purchaseOffsets(offsetAmount);
   };
 
   return (
@@ -65,7 +72,7 @@ const OffsetPurchase = ({
             </div>
             <Slider
               id="offset-amount"
-              defaultValue={[offsetAmount]}
+              value={[offsetAmount]}
               max={20}
               min={1}
               step={1}
@@ -78,7 +85,7 @@ const OffsetPurchase = ({
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium">Total Cost:</p>
               <p className="text-lg font-bold text-eco-dark">
-                {(offsetAmount * tokenPrice).toFixed(3)} ETH
+                {(offsetAmount * parseFloat(tokenPrice)).toFixed(3)} ETH
               </p>
             </div>
             <div className="mt-2 flex items-center text-sm text-muted-foreground">
@@ -89,9 +96,10 @@ const OffsetPurchase = ({
           
           <Button
             onClick={handlePurchase}
-            className="w-full bg-eco hover:bg-eco-dark text-white"
+            disabled={isLoading || account === "Not connected"}
+            className="w-full bg-eco hover:bg-eco-dark shadow-lg text-black"
           >
-            Purchase Carbon Offsets
+            {isLoading ? "Processing..." : "Purchase Carbon Offsets"}
           </Button>
         </div>
       </CardContent>

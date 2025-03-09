@@ -12,10 +12,10 @@ const Timeline = () => {
   const timelineItems = [
     {
       title: "Sign Up",
-      description: "Create your account in less than 2 minutes. No credit card required."
+      description: "Create your account in less than 2 minutes."
     },
     {
-      title: "Link Accounts",
+      title: "Accounts Details",
       description: "Securely connect your existing bank accounts and credit cards."
     },
     {

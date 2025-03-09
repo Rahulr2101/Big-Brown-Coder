@@ -38,7 +38,7 @@ const WalletCard= ({
           <div className="grid grid-cols-2 gap-2">
             <div className="rounded-lg bg-secondary p-4">
               <p className="text-sm text-muted-foreground mb-1">ETH Balance</p>
-              <p className="font-medium">{ethBalance.toFixed(4)} ETH</p>
+              <p className="font-medium">{ethBalance} ETH</p>
             </div>
             <div className="rounded-lg bg-secondary p-4">
               <p className="text-sm text-muted-foreground mb-1">Carbon Tokens</p>
@@ -51,7 +51,7 @@ const WalletCard= ({
 
           <Button
             onClick={connectWallet}
-            className="w-full bg-eco hover:bg-eco-dark text-white"
+            className="w-full bg-eco hover:bg-eco-dark  text-black"
           >
             {account === "Not connected" ? "Connect Wallet" : "Refresh Balance"}
           </Button>
