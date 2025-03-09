@@ -12236,12 +12236,12 @@
         }
       },
       "links": {},
-      "address": "0x5182a68d330FAbe5063dfc74B9F0C341f38FDe6F",
-      "transactionHash": "0x25789fcd34d7865ba7f0b726f37e5b4a6ee86ec3f4d31b673f692d57bdf6800b"
+      "address": "0x2fE0b2aA90ddE6fd9693aE354f02934C079819dC",
+      "transactionHash": "0xd36f7a2aef93de24277a07e82b782edb26ca681eb2f983e61f876de880c68c8b"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-03-09T02:24:25.389Z",
+  "updatedAt": "2025-03-09T03:40:26.289Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "ERC20 token representing carbon offsets",
