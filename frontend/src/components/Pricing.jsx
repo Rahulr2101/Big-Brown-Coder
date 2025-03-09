@@ -78,7 +78,8 @@ const PricingCard = ({
           </li>
         ))}
       </ul>
-      
+      <Link to="/dashboard">
+
       <Button 
         variant={plan.buttonVariant}
         className={cn(
@@ -90,6 +91,7 @@ const PricingCard = ({
       >
         Get Started
       </Button>
+      </Link>
     </div>
   );
 };

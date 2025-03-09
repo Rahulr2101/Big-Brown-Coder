@@ -61,7 +61,7 @@ const data = {
       icon: Bot,
     },
     {
-      title: "Ai",
+      title: "AI",
       url: "/Ai",
       icon: BookOpen,
       items: [

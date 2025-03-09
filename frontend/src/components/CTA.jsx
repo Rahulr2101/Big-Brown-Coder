@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
+import { Link } from 'react-router-dom';
 const CTA = () => {
   const sectionRef = useRef(null);
   const contentRef = useRef(null);
@@ -42,9 +42,12 @@ const CTA = () => {
             Start your journey today.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-white hover:bg-lavender text-purple hover:text-purple-dark rounded-full px-8 py-6 text-lg">
-              Get Started
-            </Button>
+            
+          <Link to="/dashboard">
+  <Button className="bg-white hover:bg-lavender text-purple hover:text-purple-dark rounded-full px-8 py-6 text-lg">
+    Get Started
+  </Button>
+</Link>
             <Button variant="outline" className="border-white/30 hover:bg-white/10 text-purple rounded-full px-8 py-6 text-lg">
               Contact Sales
             </Button>
