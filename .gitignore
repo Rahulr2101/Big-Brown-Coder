@@ -15,3 +15,4 @@
 
 # Ignore other general files/folders
 *.tmp
+/home/verz/Big-Brown-Coder/backend/block/node_modules
