@@ -11,7 +11,6 @@ createRoot(document.getElementById('root')).render(
     <Router>
       <Routes>
         <Route path='/' element={<App/>}/>
-        
         <Route path='/dashboard' element={<Dashboard/>}/>
         <Route path='/news' element={<FinancialSentimentDashboard/>}/>
       </Routes>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -38,21 +39,19 @@ const Navbar = () => {
         </a>
 
   
-        <nav className="hidden md:flex items-center space-x-8">
-          <a href="#features" className="text-foreground/80 hover:text-purple transition-colors">Features</a>
-          <a href="#pricing" className="text-foreground/80 hover:text-purple transition-colors">Pricing</a>
-          <a href="#testimonials" className="text-foreground/80 hover:text-purple transition-colors">Testimonials</a>
-          <a href="#insights" className="text-foreground/80 hover:text-purple transition-colors">Insights</a>
-        </nav>
+       
 
       
         <div className="hidden md:block">
+        <Link to="/dashboard">
+
           <Button
             variant="default"
             className="bg-purple hover:bg-purple-dark text-white rounded-full px-6"
           >
             Get Started
           </Button>
+          </Link>
         </div>
 
       
@@ -107,6 +106,8 @@ const Navbar = () => {
           >
             Insights
           </a>
+          <Link to="/dashboard">
+
           <Button
             variant="default"
             className="bg-purple hover:bg-purple-dark text-white rounded-full w-full px-6 py-6"
@@ -114,6 +115,7 @@ const Navbar = () => {
           >
             Get Started
           </Button>
+          </Link>
         </nav>
       </div>
     </header>

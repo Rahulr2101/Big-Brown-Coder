@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
+import { Link } from 'react-router-dom';
 const Hero = () => {
   const phoneRef = useRef(null);
   
@@ -47,13 +47,16 @@ const Hero = () => {
             </h1>
             
             <p className="body-lg text-foreground/70 mb-8 max-w-xl mx-auto lg:mx-0 animate-fade-in" style={{ animationDelay: "200ms" }}>
-              Experience modern banking with powerful tools for budgeting, transfers, investments, and real-time insights—all in one seamless platform.
+            Experience modern trading tools and sustainability, enhanced with AI-powered features, offering more tools and real-time insights—all in one seamless platform.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-in" style={{ animationDelay: "300ms" }}>
+            <Link to="/dashboard">
+
               <Button className="bg-purple hover:bg-purple-dark text-white rounded-full px-8 py-6 text-lg">
                 Get Started
               </Button>
+              </Link>
               <Button variant="outline" className="border-purple/20 bg-white/50 hover:bg-lavender text-foreground rounded-full px-8 py-6 text-lg">
                 Learn More
               </Button>
