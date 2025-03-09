@@ -66,8 +66,8 @@ const data = {
       icon: BookOpen,
       items: [
         {
-          title: "Introduction",
-          url: "#",
+          title: "Carbon Footprint",
+          url: "/crypto",
         },
         {
           title: "Get Started",
@@ -84,8 +84,8 @@ const data = {
       ],
     },
     {
-      title: "Settings",
-      url: "#",
+      title: "Carbon Footprint",
+      url: "/crypto",
       icon: Settings2,
       items: [
         {

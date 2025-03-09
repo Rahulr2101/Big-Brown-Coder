@@ -18,11 +18,13 @@ import {fetchStackData} from '../api/fetchStockData.js'
 import Home from "@/components/home.jsx"
 import FinancialSentimentDashboard from "./FinancialSentimentDashboard.jsx"
 import { ChatInterface } from "@/components/ChatInterface.jsx"
+import CarbonOffsetDApp from "./index.jsx"      
 export default function Dashboard() {
   const pages ={
     '/dashboard':<Home/>,
     '/news':<FinancialSentimentDashboard/>,
-    '/Ai': <ChatInterface/>
+    '/Ai': <ChatInterface/>,
+    '/crypto':<CarbonOffsetDApp/>
   }
   const[select,setSelect] = useState('/dashboard');
 

@@ -92,8 +92,8 @@ const Features = () => {
     },
     {
       icon: <Shield className="w-6 h-6" />,
-      title: "Advanced Security",
-      description: "Rest easy with bank-level encryption, biometric authentication, and real-time fraud detection systems."
+      title: "AI-Driven Stock Insights",
+      description: "Stay ahead with real-time stock analysis, predictive trends, and personalized recommendations for smarter investing."
     },
     {
       icon: <PiggyBank className="w-6 h-6" />,
@@ -102,8 +102,8 @@ const Features = () => {
     },
     {
       icon: <CreditCard className="w-6 h-6" />,
-      title: "Virtual Cards",
-      description: "Create unlimited virtual cards for online purchases with customizable spending limits and automatic categorization."
+      title: "Focus on Sustainability",
+      description: "Track and reduce your environmental impact by calculating your carbon footprint, helping you make informed decisions for a greener future."
     },
     {
       icon: <Zap className="w-6 h-6" />,

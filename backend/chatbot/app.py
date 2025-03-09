@@ -1,5 +1,4 @@
-from flask import Flask, request, jsonify, session
-from flask_cors import CORS
+from flask import Flask, request, jsonify
 import requests
 import logging
 import time
@@ -7,11 +6,10 @@ import re
 import json
 import os
 from llama_cpp import Llama
-
+from flask_cors import CORS
 # Initialize Flask app
 app = Flask(__name__)
 CORS(app)
-app.secret_key = 'your_secret_key_here'  # Required for session management
 
 # Setup logging
 logging.basicConfig(
@@ -24,7 +22,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# API Configuration (unchanged)
+# API Configuration
 YAHOO_TICKERS_URL = "https://yahoo-finance15.p.rapidapi.com/api/v2/markets/tickers"
 YAHOO_TICKERS_HEADERS = {
     "x-rapidapi-host": "yahoo-finance15.p.rapidapi.com",
@@ -52,7 +50,181 @@ MODEL_FILENAME = "finance-chat.Q8_0.gguf"
 # Initialize Llama model
 llama_model = None
 
-# Helper function to initialize Llama model (unchanged)
+def get_all_ticker_pages(max_pages=20, symbol_to_find=None):
+    """Fetch ticker data from multiple pages."""
+    all_tickers = []
+    found_symbol = False
+    
+    for page in range(1, max_pages + 1):
+        logger.info(f"Fetching ticker page {page}/{max_pages}")
+        try:
+            params = {"page": page, "type": "STOCKS"}
+            max_retries = 3
+            retry_delay = 2  # seconds
+            
+            for attempt in range(max_retries):
+                try:
+                    response = requests.get(
+                        YAHOO_TICKERS_URL, 
+                        headers=YAHOO_TICKERS_HEADERS, 
+                        params=params,
+                        timeout=10
+                    )
+                    
+                    if response.status_code == 200:
+                        data = response.json()
+                        if "body" in data and isinstance(data["body"], list):
+                            page_tickers = data["body"]
+                            all_tickers.extend(page_tickers)
+                            
+                            if symbol_to_find:
+                                for ticker in page_tickers:
+                                    if ticker.get("symbol") == symbol_to_find:
+                                        found_symbol = True
+                                        break
+                        break
+                    elif response.status_code == 429:  # Rate limit exceeded
+                        retry_after = int(response.headers.get('Retry-After', retry_delay * (attempt + 1)))
+                        time.sleep(retry_after)
+                    else:
+                        logger.error(f"Error fetching page {page}: Status {response.status_code}")
+                        break
+                except requests.exceptions.RequestException as e:
+                    logger.error(f"Request exception on page {page}, attempt {attempt+1}: {str(e)}")
+                    if attempt < max_retries - 1:
+                        time.sleep(retry_delay * (attempt + 1))
+                    else:
+                        logger.error(f"Max retries reached for page {page}")
+            
+            if found_symbol:
+                break
+        except Exception as e:
+            logger.exception(f"Unexpected error fetching page {page}: {str(e)}")
+    
+    logger.info(f"Total tickers collected: {len(all_tickers)}")
+    return all_tickers
+
+def get_realtime_quote(symbol):
+    """Fetch real-time quote data for a specific ticker symbol."""
+    logger.info(f"Fetching real-time quote for: {symbol}")
+    try:
+        params = {"ticker": symbol, "type": "STOCKS"}
+        max_retries = 3
+        retry_delay = 2  # seconds
+        
+        for attempt in range(max_retries):
+            try:
+                response = requests.get(
+                    REALTIME_QUOTE_URL, 
+                    headers=REALTIME_QUOTE_HEADERS,
+                    params=params,
+                    timeout=10
+                )
+                
+                if response.status_code == 200:
+                    return response.json()
+                elif response.status_code == 429:  # Rate limit exceeded
+                    retry_after = int(response.headers.get('Retry-After', retry_delay * (attempt + 1)))
+                    time.sleep(retry_after)
+                else:
+                    logger.error(f"Real-time quote API error for {symbol}: Status {response.status_code}")
+                    return {}
+            except requests.exceptions.RequestException as e:
+                logger.error(f"Request exception on real-time quote for {symbol}, attempt {attempt+1}: {str(e)}")
+                if attempt < max_retries - 1:
+                    time.sleep(retry_delay * (attempt + 1))
+                else:
+                    logger.error(f"Max retries reached for real-time quote on {symbol}")
+                    return {}
+    except Exception as e:
+        logger.exception(f"Unexpected error fetching real-time quote for {symbol}: {str(e)}")
+        return {}
+
+def search_ticker_by_symbol(symbol, tickers=None, max_pages=3):
+    """Search for a specific ticker symbol."""
+    logger.info(f"Searching for ticker symbol: {symbol}")
+    if tickers is None:
+        tickers = get_all_ticker_pages(max_pages=max_pages, symbol_to_find=symbol)
+    
+    for ticker in tickers:
+        if ticker.get("symbol") == symbol:
+            logger.info(f"Found ticker data for {symbol}")
+            return ticker
+    
+    logger.warning(f"Ticker {symbol} not found in {len(tickers)} results")
+    return None
+
+def get_esg_data(symbol):
+    """Fetch ESG score data for a given symbol."""
+    logger.info(f"Fetching ESG data for symbol: {symbol}")
+    try:
+        url = ESG_API_URL_TEMPLATE.format(symbol=symbol)
+        max_retries = 3
+        retry_delay = 2  # seconds
+        
+        for attempt in range(max_retries):
+            try:
+                response = requests.get(url, headers=ESG_API_HEADERS, timeout=10)
+                
+                if response.status_code == 200:
+                    return response.json()
+                elif response.status_code == 429:  # Rate limit exceeded
+                    retry_after = int(response.headers.get('Retry-After', retry_delay * (attempt + 1)))
+                    time.sleep(retry_after)
+                else:
+                    logger.error(f"ESG API error for {symbol}: Status {response.status_code}")
+                    return {}
+            except requests.exceptions.RequestException as e:
+                logger.error(f"Request exception on ESG for {symbol}, attempt {attempt+1}: {str(e)}")
+                if attempt < max_retries - 1:
+                    time.sleep(retry_delay * (attempt + 1))
+                else:
+                    logger.error(f"Max retries reached for ESG data on {symbol}")
+                    return {}
+    except Exception as e:
+        logger.exception(f"Unexpected error fetching ESG data for {symbol}: {str(e)}")
+        return {}
+
+def extract_ticker_data(ticker_data, realtime_data):
+    """Extract and combine ticker data from both APIs."""
+    result = {}
+    
+    if ticker_data:
+        result["symbol"] = ticker_data.get("symbol", "N/A")
+        result["price"] = ticker_data.get("lastsale", "N/A")
+        result["change_pct"] = ticker_data.get("pctchange", "N/A")
+        result["name"] = ticker_data.get("name", "N/A")
+    
+    if realtime_data:
+        quote_data = None
+        if isinstance(realtime_data, dict):
+            if "data" in realtime_data and isinstance(realtime_data["data"], dict):
+                quote_data = realtime_data["data"]
+            elif "body" in realtime_data and isinstance(realtime_data["body"], dict):
+                quote_data = realtime_data["body"]
+        
+        if quote_data:
+            if "symbol" in quote_data:
+                result["symbol"] = quote_data.get("symbol", result.get("symbol", "N/A"))
+            if "regularMarketPrice" in quote_data:
+                result["price"] = quote_data.get("regularMarketPrice", result.get("price", "N/A"))
+            if "regularMarketChangePercent" in quote_data:
+                change_pct = quote_data.get("regularMarketChangePercent")
+                result["change_pct"] = f"{change_pct:.2f}%" if isinstance(change_pct, (int, float)) else str(change_pct)
+            result["open"] = quote_data.get("regularMarketOpen", "N/A")
+            result["high"] = quote_data.get("regularMarketDayHigh", "N/A")
+            result["low"] = quote_data.get("regularMarketDayLow", "N/A")
+            result["volume"] = quote_data.get("regularMarketVolume", "N/A")
+            result["market_cap"] = quote_data.get("marketCap", "N/A")
+            result["52w_high"] = quote_data.get("fiftyTwoWeekHigh", "N/A")
+            result["52w_low"] = quote_data.get("fiftyTwoWeekLow", "N/A")
+            if "longName" in quote_data:
+                result["name"] = quote_data.get("longName", result.get("name", "N/A"))
+            result["sector"] = quote_data.get("sector", "N/A")
+            result["industry"] = quote_data.get("industry", "N/A")
+    
+    return result
+
 def initialize_llama(model_path):
     """Initialize the Llama model with GPU support and fallback to CPU."""
     logger.info("Initializing Llama model with GPU support...")
@@ -84,35 +256,9 @@ def initialize_llama(model_path):
             logger.exception(f"Error initializing Llama model on CPU: {str(e2)}")
             return None
 
-# Helper function to manage conversation history
-def get_conversation_history():
-    """Retrieve the conversation history from the session."""
-    if 'conversation_history' not in session:
-        session['conversation_history'] = []
-    return session['conversation_history']
-
-def update_conversation_history(user_message, bot_response):
-    """Update the conversation history with the latest interaction."""
-    history = get_conversation_history()
-    history.append({"user": user_message, "bot": bot_response})
-    session['conversation_history'] = history
-
-def clear_conversation_history():
-    """Clear the conversation history."""
-    session.pop('conversation_history', None)
-
-# Updated chat_response function to include conversation history
 def chat_response(user_message, model_path=MODEL_FILENAME):
-    """Generate a response to a user's financial query, considering conversation history."""
+    """Generate a response to a user's financial query."""
     logger.info(f"Processing user query: {user_message}")
-    
-    # Retrieve conversation history
-    conversation_history = get_conversation_history()
-    
-    # Prepare the prompt with conversation history
-    history_prompt = ""
-    for entry in conversation_history:
-        history_prompt += f"User: {entry['user']}\nBot: {entry['bot']}\n\n"
     
     # Check if query is specifically looking for a symbol
     symbol_match = re.search(r'\b([A-Z]{1,5})\b', user_message)
@@ -188,10 +334,27 @@ def chat_response(user_message, model_path=MODEL_FILENAME):
         if not llama_model:
             return "I'm sorry, but I'm unable to process your request at the moment due to a technical issue with the language model."
     
-    # Construct the enriched prompt with conversation history
+    # Customize prompt based on query type
+    is_investment_query = any(term in user_message.lower() for term in [
+        "invest", "buy", "sell", "worth", "stock", "good investment", 
+        "should i", "portfolio", "holding", "position"
+    ])
+    
+    prompt_instructions = (
+        "The user is asking about investment advice. Analyze the current market data provided below, "
+        "and give a balanced assessment that considers both financial performance and ESG factors. "
+        "Include pros and cons, potential risks, and suggest sustainable alternatives if appropriate. "
+        "Focus on educational information rather than direct financial advice."
+    ) if is_investment_query else (
+        "Answer the following financial query by providing a detailed analysis based on the real-time "
+        "market data below. Include relevant ESG (Environmental, Social, Governance) considerations "
+        "and focus on clear, actionable information."
+    )
+    
+    # Construct the enriched prompt
     timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
     enriched_prompt = (
-        f"Conversation History:\n{history_prompt}\n\n"
+        f"{prompt_instructions}\n\n"
         f"User Query: {user_message}\n\n"
         f"Current Market Data (as of {timestamp}):\n{ticker_summary}\n\n"
         "Answer:"
@@ -217,16 +380,11 @@ def chat_response(user_message, model_path=MODEL_FILENAME):
         
         logger.info("Successfully generated response")
         logger.debug(f"Model response: {reply}")
-        
-        # Update conversation history
-        update_conversation_history(user_message, reply)
-        
         return reply.strip()
     except Exception as e:
         logger.exception(f"Error generating response with Llama: {str(e)}")
         return "I apologize, but I encountered an error while processing your request. Please try again with a different query."
 
-# Flask endpoints (unchanged)
 @app.route('/chat', methods=['POST'])
 def chat():
     """Endpoint for handling chat requests."""
@@ -253,6 +411,6 @@ if __name__ == "__main__":
     # Initialize the Llama model when the server starts
     llama_model = initialize_llama(MODEL_FILENAME)
     if llama_model:
-        app.run(host='0.0.0.0', port=2500, debug=False)
+        app.run(host='0.0.0.0', port=2000, debug=False)
     else:
         logger.error("Failed to initialize Llama model. Exiting.")
