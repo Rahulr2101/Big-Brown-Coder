@@ -1,4 +1,3 @@
-
 # Define 3.0
 The official template repository for Define 3.0
 
@@ -10,27 +9,28 @@ The official template repository for Define 3.0
  Cover Image  If applicable
 
 ### Team Information
-- **Team Name**: <Team Name> 
-- **Track**: < Track >
+- **Team Name**: Big Brown Coders 
+- **Track**: AI in Finance
 
 ### Team Members
 | Name | Role | GitHub | LinkedIn |
 |------|------|--------|----------|
-| [Full Name] | [Role] | [@username](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
-| [Full Name] | [Role] | [@username](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
-| [Full Name] | [Role] | [@username](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
-| [Full Name] | [Role] | [@username](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
+| Pirajesh M R | [Role] | [@verz0](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
+| Rahul Rajesh Kumar | [Role] | [@rahulr2101](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
+| Sarang T Sudhir | [Role] | [@ash-004](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
+| Nikhil Kumar Mishra | [Role] | [@yamiarch](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
 
 ## Project Details
 
 ### Overview
-_A concise summary of your project (2-3 sentences)_
+**Paymint** is an AI-powered sustainable fintech platform that bridges traditional finance, decentralized finance, and blockchain-based sustainability. 
+We integrate real time financial data, employ advanced AI and expand into decentralized finance to empower our users to make informed and sustainable investment decisions.
 
 ### Problem Statement
-_Describe the problem your project aims to solve_
+Traditional financial platforms often provide only raw market data or isolated ESG metrics, leaving investors without a holistic view of both financial performance and sustainable impact. Moreover, the emerging fields of decentralized finance and blockchain‐based carbon offsets remain disconnected from conventional investment tools, making it difficult for investors to align their portfolios with their environmental values. All finance applications are black box as of now, we aim to give the users the ability to control their owwn data
 
 ### Solution
-_Explain your approach to solving the problem_
+Our project, PayMint, bridges this gap by integrating real‑time financial data, ESG metrics, and blockchain-based carbon offset solutions into a single, unified platform accessible by virtually anyone. By leveraging APIs for live market and sustainability data and an AI-powered analysis engine/chatbot that was built on a quantized Llama model, PayMint delivers personalized investment recommendations. PayMint aims to balance profitability with environmental impact. Additionally, we enable users to track their carbon footprints and directly purchase tokenized carbon offsets on Ethereum, thereby letting investors make informed, sustainable decisions that contribute to a greener future.
 
 ### Demo
 [![Project Demo](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
@@ -42,20 +42,25 @@ _Replace VIDEO_ID with your YouTube video ID or provide an alternative demo link
 ## Technical Implementation
 
 ### Technologies Used
-- **Frontend**: [Technologies]
-- **Backend**: [Technologies]
-- **Database**: [Technologies]
-- **APIs**: [Technologies]
-- **DevOps**: [Technologies]
-- **Other Tools**: [Technologies]
+- **Frontend**: [React]
+- **Backend**: [Flask][Ethereum]
+- **Database**: [SQLite]
+- **APIs**: [Yahoo Finance API & ESG API]
+- **DevOps**: [Coming Soon....]
 
 ### Key Features
-- Feature 1
-- Feature 2
-- Feature 3
+#### AI-Powered Sustainable Investment Analysis:
+Utilizes a quantized Llama-based language model (via llama‑cpp‑python) to deliver context-aware, detailed financial analysis and personalized investment recommendations that balance profitability with eco-friendly alternatives, while maintaining conversation history.
+
+#### Integrated Financial & ESG Dashboard:
+We combine real‑time market data with comprehensive ESG metrics, offering investors a unified view of both financial performance and sustainability measures for their portfolios.
+
+#### Carbon Footprint Tracking & Blockchain Offset Purchasing:
+Enables users to track their carbon footprint and directly purchase tokenized carbon offsets on Ethereum via smart contracts, hence integrating traditional finance with decentralized, sustainable solutions.
+
 
 ## Setup Instructions
-
+ 
 ### Prerequisites
 - Requirement 1
 - Requirement 2
@@ -74,7 +79,15 @@ _Replace VIDEO_ID with your YouTube video ID or provide an alternative demo link
 ## Additional Resources
 
 ### Project Timeline
-_Brief overview of your development process and milestones_
+#### Phase 1 – Planning & Design
+On the train journey to Trivandrum we scoured through sustainable startups and fintech companies for inspiration and finally landed on our idea.
+
+#### Phase 2 - AI Module & Conversation Management
+One of the first features to be completed since the problem statement requires it 
+
+#### Phase 3 & 4 - Blockchain & Carbon Offset, Frontend Development & Integration
+#### Phase 5 – Deployment
+Still working on it :)
 
 ### Challenges Faced
 _Discuss technical challenges and how you overcame them_
