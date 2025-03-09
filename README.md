@@ -15,9 +15,9 @@ The official template repository for Define 3.0
 ### Team Members
 | Name | Role | GitHub | LinkedIn |
 |------|------|--------|----------|
-| Pirajesh M R | AI/Backend | [@verz0](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
-| Rahul Rajesh Kumar | Frontend/UI/UX | [@rahulr2101](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
-| Sarang T Sudhir | Backend/Mobile | [@ash-004](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
+| Pirajesh M R | AI / Backend | [@verz0](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
+| Rahul Rajesh Kumar | Frontend / UI / UX | [@rahulr2101](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
+| Sarang T Sudhir | Backend / Mobile | [@ash-004](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
 | Nikhil Kumar Mishra | AI | [@yamiarch](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
 
 ## Project Details
