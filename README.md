@@ -15,10 +15,10 @@ The official template repository for Define 3.0
 ### Team Members
 | Name | Role | GitHub | LinkedIn |
 |------|------|--------|----------|
-| Pirajesh M R | [Role] | [@verz0](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
-| Rahul Rajesh Kumar | [Role] | [@rahulr2101](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
-| Sarang T Sudhir | [Role] | [@ash-004](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
-| Nikhil Kumar Mishra | [Role] | [@yamiarch](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
+| Pirajesh M R | AI/Backend | [@verz0](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
+| Rahul Rajesh Kumar | Frontend/UI/UX | [@rahulr2101](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
+| Sarang T Sudhir | Backend/Mobile | [@ash-004](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
+| Nikhil Kumar Mishra | AI | [@yamiarch](https://github.com/username) | [Profile](https://linkedin.com/in/username) |
 
 ## Project Details
 
@@ -42,11 +42,11 @@ _Replace VIDEO_ID with your YouTube video ID or provide an alternative demo link
 ## Technical Implementation
 
 ### Technologies Used
-- **Frontend**: [React]
-- **Backend**: [Flask][Ethereum]
-- **Database**: [SQLite]
+- **Frontend**: [React,Tailwind]
+- **Backend**: [Flask][solidity][Python]
+- **Database**: [SQLite][NoSQL]
 - **APIs**: [Yahoo Finance API & ESG API]
-- **DevOps**: [Coming Soon....]
+- **AI**: [NLP,LLM,GEN-AI]
 
 ### Key Features
 #### AI-Powered Sustainable Investment Analysis:
@@ -67,14 +67,71 @@ Enables users to track their carbon footprint and directly purchase tokenized ca
 - Requirement 3
 
 ### Installation 
+Ensure you have Git installed, then clone the repository
 ```bash
+git clone <repository_url>
+cd <repository_name>
+
+## 
+npm install
+
+## Ensure you have Node.js installed (recommended version: LTS). Then, install dependencies
+npm install firebase
+
+
+```
+<h1>Backend Setup (Chatbot & Blockchain)</h1>
+2.1 Navigate to the Backend Directory
+
+```bash
+
+cd ./backend/chatbot/
+```
+
+2.2 Install Solidity and Blockchain Dependencies
+
+Install Truffle (for smart contract development & testing)
+
+```bash
+
+npm install -g truffle
+
+```
+2.3 Running the LLaMA 2-Based LLM Model
+
+
+```bash
+python3 esg.py
+```
+
+For CPU
+```bash
+
+pip install torch torchvision torchaudio
+
+```
+
+For GPU (CUDA)
+```bash
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+
+```
+
+Kotlin Installation
+If your project involves Kotlin, install it using SDKMAN
+```bash
+sdk install kotlin
+```
+
+For GPU (CUDA)
+
+```bash
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
 ```
 
 ### Running the Project
-```bash
-
-```
 
 ## Additional Resources
 
@@ -105,7 +162,7 @@ _Share your vision for future development_
 - [ ] Completed all sections of this README
 - [ ] Added project demo video
 - [ ] Provided live project link
-- [ ] Ensured all team members are listed
+- [*] Ensured all team members are listed
 - [ ] Included setup instructions
 - [ ] Submitted final code to repository
 
