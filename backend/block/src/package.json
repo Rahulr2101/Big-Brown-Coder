@@ -18,5 +18,10 @@
         "@openzeppelin/contracts": "^4.9.3",
         "lite-server": "^2.6.1",
         "web3": "^1.10.4"
+<<<<<<< Updated upstream
     }
+=======
+    },
+    "type": "commonjs"
+>>>>>>> Stashed changes
 }

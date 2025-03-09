@@ -7,6 +7,7 @@
 /backend/node_modules/
 /backend/.env
 /backend/build/
+/backend/chatbot/finance-chat.Q8_0.gguf
 
 # Ignore system or IDE files
 .DS_Store
