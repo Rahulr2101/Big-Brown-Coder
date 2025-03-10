@@ -11,7 +11,7 @@ export const ChatInterface = () => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
-  const backendUrl = "http://34.69.72.160:8080/chat"; // Replace with your backend URL
+  const backendUrl = " https://finance-api-784408624700.asia-south1.run.app/chat"; // Replace with your backend URL
 
   // Load chat history from localStorage when the component mounts
   useEffect(() => {
@@ -150,7 +150,7 @@ export const ChatInterface = () => {
                 <Button
                   variant="outline"
                   className="text-left justify-start h-auto py-3"
-                  onClick={() => setInputValue("Esg score of Aapl")}
+                  onClick={() => setInputValue("Give me ideas for a project")}
                 >
                   "Esg score of Aapl"
                 </Button>
