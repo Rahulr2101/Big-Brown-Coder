@@ -63,11 +63,11 @@ const Hero = () => {
             </div>
             
             <div className="mt-12 flex flex-wrap justify-center lg:justify-start gap-8 animate-fade-in" style={{ animationDelay: "400ms" }}>
-              {['BNP Paribas', 'UBS', 'VISA', '100+ Companies'].map((company, index) => (
+              {/* {['BNP Paribas', 'UBS', 'VISA', '100+ Companies'].map((company, index) => (
                 <div key={index} className="flex items-center text-gray-500 text-sm font-medium">
                   {company}
                 </div>
-              ))}
+              ))} */}
             </div>
           </div>
         

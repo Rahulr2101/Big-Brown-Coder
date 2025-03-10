@@ -8,7 +8,7 @@ import RadialChart from "@/components/RadialChart.jsx"
 export default function Home() {
     const balanceData = [
         { value: 48000 }, { value: 40 }, { value: 0 }, 
-        { value: 49800 }, { value: 52400 }, { value: 50100 }, 
+        { value: 49800 }, { value: 50 }, { value: 50100 }, 
         { value: 51900 }, { value: 0 }
       ];
       

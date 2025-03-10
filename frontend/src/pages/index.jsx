@@ -3,8 +3,8 @@ import { toast } from "react-toastify";
 import Header from "@/components/Header";
 import WalletCard from "@/components/WalletCard";
 import FootprintCalculator from "@/components/FootprintCalculator";
-import OffsetPurchase from "@/components/OffsetPurchase";
-import CarbonInfo from "@/components/CarbonInfo";
+import OffsetPurchase from "@/components/OffsetPurchase"; 
+import CarbonInfo from "../components/CarbonInfo";
 import web3Service from "../api/Web3Services";
 
 const Index = () => {
