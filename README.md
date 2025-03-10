@@ -33,7 +33,7 @@ Traditional financial platforms often provide only raw market data or isolated E
 Our project, PayMint, bridges this gap by integrating real‑time financial data, ESG metrics, and blockchain-based carbon offset solutions into a single, unified platform accessible by virtually anyone. By leveraging APIs for live market and sustainability data and an AI-powered analysis engine/chatbot that was built on a quantized Llama model, PayMint delivers personalized investment recommendations. PayMint aims to balance profitability with environmental impact. Additionally, we enable users to track their carbon footprints and directly purchase tokenized carbon offsets on Ethereum, thereby letting investors make informed, sustainable decisions that contribute to a greener future.
 
 ### Demo
-![Project Demo](https://youtu.be/ZQucrem36os)
+[![Project Demo](https://img.youtube.com/vi/ZQucrem36os/0.jpg)](https://www.youtube.com/watch?v=ZQucrem36os)
 
 
 ## Technical Implementation
