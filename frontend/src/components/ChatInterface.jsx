@@ -131,28 +131,28 @@ export const ChatInterface = () => {
                   className="text-left justify-start h-auto py-3"
                   onClick={() => setInputValue("What can you help me with?")}
                 >
-                  "What can you help me with?"
+                  "What is Aapl"
                 </Button>
                 <Button
                   variant="outline"
                   className="text-left justify-start h-auto py-3"
                   onClick={() => setInputValue("Tell me an interesting fact")}
                 >
-                  "Tell me an interesting fact"
+                  "Give me Some sustainable financial insights"
                 </Button>
                 <Button
                   variant="outline"
                   className="text-left justify-start h-auto py-3"
                   onClick={() => setInputValue("How does AI technology work?")}
                 >
-                  "How does AI technology work?"
+                  "What is Nvda"
                 </Button>
                 <Button
                   variant="outline"
                   className="text-left justify-start h-auto py-3"
                   onClick={() => setInputValue("Give me ideas for a project")}
                 >
-                  "Give me ideas for a project"
+                  "Esg score of Aapl"
                 </Button>
               </div>
             </div>
