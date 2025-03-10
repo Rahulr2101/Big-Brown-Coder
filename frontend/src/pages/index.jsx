@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import WalletCard from "@/components/WalletCard";
 import FootprintCalculator from "@/components/FootprintCalculator";
 import OffsetPurchase from "@/components/OffsetPurchase"; 
-import CarbonInfo from "@/components/CarbonInfo";
+import CarbonInfo from "@/components/CarbonInfo.jsx";
 import web3Service from "../api/Web3Services";
 
 const Index = () => {
