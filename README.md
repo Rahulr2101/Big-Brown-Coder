@@ -6,8 +6,6 @@ The official template repository for Define 3.0
 
 
 # PayMint
- Cover Image  If applicable
-
 ### Team Information
 - **Team Name**: Big Brown Coders 
 - **Track**: AI in Finance
