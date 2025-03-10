@@ -11,7 +11,7 @@ export const ChatInterface = () => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
-  const backendUrl = " http://34.69.72.160:8080/chat"; // Replace with your backend URL
+  const backendUrl = "http://34.69.72.160:8080/chat"; // Replace with your backend URL
 
   // Load chat history from localStorage when the component mounts
   useEffect(() => {
