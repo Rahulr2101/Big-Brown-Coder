@@ -148,7 +148,12 @@ npm run dev
 
 ## Additional Resources
 
-### Project Timeline
+- **Node.js**: v20
+- **Python**: v3.12.7
+- **React**: v19
+
+
+## Project Timeline
 #### Phase 1 – Planning & Design
 On the train journey to Trivandrum we scoured through sustainable startups and fintech companies for inspiration and finally landed on our idea.
 
@@ -159,19 +164,20 @@ One of the first features to be completed since the problem statement requires i
 #### Phase 5 – Deployment
 Deployment has been completed.
 
-### Challenges Faced
-_Discuss technical challenges and how you overcame themt_
+## Challenges Faced
 - First time working with blockchain technologies so we had to read a learn and navigate ourselves through the tech in a short span of time
-- Due to lack of compute on our side, we had to learn to work with quantized models via yt videos and documentations on the go and made it possible to produce highly accurate results
+- Due to lack of compute on our side, we had to learn to work with quantized models via yt videos and documentations on the go and made it possible to produce highly accurate results. Demo of the chatbot can be seen in our youtube video.
+- We could not deploy the blockchain on the mainnet due to insufficient funds but we tried our level best to get it up and running. On development side we worked using truffle testnet whose functionality can be seen in the youtube video attached.
+  
 
-### Future Enhancements
+## Future Enhancements
 _Share your vision for future development_
 
 - Full fledged mobile app for expense tracking
 - Advanced and comphrehensive screener
 - Deployment with good compute and resources
 
-### Submission Checklist
+## Submission Checklist
 - [✅] Completed all sections of this README
 - [✅] Added project demo video
 - [✅] Live Deployment
