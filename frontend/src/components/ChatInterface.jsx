@@ -116,9 +116,15 @@ export const ChatInterface = () => {
           <div className="flex items-center justify-center h-full">
             <div className="text-center max-w-md">
               <h3 className="text-xl font-medium mb-2">Welcome to MintAI</h3>
+              <div>
               <p className="text-muted-foreground mb-4">
-                Start a conversation with our AI. Ask questions, request information, or just chat.
+              Start a conversation with our AI. Ask questions, request information, or just chat.
               </p>
+              <p className='font-bold text-orange-400'>Responses will be slower due to low compute resources on our side and may take 2-3 minutes.</p>
+              </div>
+
+            
+            
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                 <Button
                   variant="outline"
@@ -209,6 +215,7 @@ export const ChatInterface = () => {
         </form>
         <p className="text-xs text-muted-foreground mt-2 text-center">
           MintAI may produce inaccurate information about people, places, or facts.
+        
         </p>
         <Button
           variant="outline"
