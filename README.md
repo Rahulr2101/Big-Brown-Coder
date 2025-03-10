@@ -47,6 +47,7 @@ Our project, PayMint, bridges this gap by integrating real‑time financial data
 - **Database**: [SQLite][NoSQL]
 - **APIs**: [Yahoo Finance API & ESG API]
 - **AI**: [NLP,LLM,GEN-AI]
+- **DevOps**: [Google Cloud Services, Docker]
 
 ### Key Features
 #### AI-Powered Sustainable Investment Analysis:
@@ -68,9 +69,9 @@ Most expense trackers require users to manually input every transaction, making 
 ## Setup Instructions
  
 ### Prerequisites
-- Requirement 1
-- Requirement 2
-- Requirement 3
+- **Node.js**: v20
+- **Python**: v3.12.7
+- **React**: v19
 
 ### Installation 
 Ensure you have Git installed, then clone the repository
@@ -145,13 +146,6 @@ new terminal
 cd ../../frontend/
 npm run dev
 ```
-
-## Additional Resources
-
-- **Node.js**: v20
-- **Python**: v3.12.7
-- **React**: v19
-
 
 ## Project Timeline
 #### Phase 1 – Planning & Design
