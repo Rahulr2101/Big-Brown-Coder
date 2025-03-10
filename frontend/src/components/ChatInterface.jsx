@@ -138,7 +138,7 @@ export const ChatInterface = () => {
                   className="text-left justify-start h-auto py-3"
                   onClick={() => setInputValue("Tell me an interesting fact")}
                 >
-                  "Give me Some sustainable financial insights"
+                  "Give financial insights?"
                 </Button>
                 <Button
                   variant="outline"
