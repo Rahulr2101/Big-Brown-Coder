@@ -5,7 +5,7 @@ The official template repository for Define 3.0
 
 
 
-# < Project Name >
+# PayMint
  Cover Image  If applicable
 
 ### Team Information
