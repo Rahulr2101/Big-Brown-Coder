@@ -35,6 +35,9 @@ Our project, PayMint, bridges this gap by integrating real‑time financial data
 ### Demo
 [![Project Demo](https://img.youtube.com/vi/ZQucrem36os/0.jpg)](https://www.youtube.com/watch?v=ZQucrem36os)
 
+### Live Project
+[PayMint](https://big-brown-coder.vercel.app)
+
 
 ## Technical Implementation
 
