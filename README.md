@@ -166,7 +166,7 @@ Deployment has been completed.
 
 ## Challenges Faced
 - First time working with blockchain technologies so we had to read a learn and navigate ourselves through the tech in a short span of time
-- Due to lack of compute on our side, we had to learn to work with quantized models via yt videos and documentations on the go and made it possible to produce highly accurate results. Demo of the chatbot can be seen in our youtube video.
+- Due to lack of compute on free tier of cloud service, we had to learn to work with quantized models on local machines made it possible to produce highly accurate results. Demo of the chatbot can be seen in our youtube video.
 - We could not deploy the blockchain on the mainnet due to insufficient funds but we tried our level best to get it up and running. On development side we worked using truffle testnet whose functionality can be seen in the youtube video attached.
   
 
