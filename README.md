@@ -138,6 +138,13 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 ```
 
 ### Running the Project
+```bash
+cd ./backend/chatbot
+python3 app.py
+new terminal
+cd ../../frontend/
+npm run dev
+```
 
 ## Additional Resources
 
