@@ -50,27 +50,28 @@ Our project, PayMint, bridges this gap by integrating real‑time financial data
 
 ### Key Features
 #### AI-Powered Sustainable Investment Analysis:
-Our chatbot is built on a quantized Llama-based language model (llama-cpp-python), designed to deliver intelligent, context-aware financial analysis and investment recommendations. What makes it stand out is its ability to balance profitability with sustainability, ensuring that users are not only making smart financial decisions but also considering eco-friendly alternatives.
-Unlike static models, ours keeps track of conversation history, allowing for more natural and informed interactions. It continuously pulls real-time stock data and ESG (Environmental, Social, and Governance) metrics, so the insights it provides are always up to date. Whether you’re looking for the latest market trends or sustainable investment opportunities, the model adapts to your needs, providing accurate and actionable responses.
-Trained on a mix of financial datasets and social sentiment from platforms like Twitter, it understands both the numbers and the broader market sentiment. And when you need real-time financial information, it taps into live finance APIs to ensure that every recommendation or analysis is backed by the latest data available. This means you get insights that aren’t just theoretically sound but also practical and relevant in the moment.
+- Our chatbot is built on a quantized Llama-based language model (llama-cpp-python), designed to deliver intelligent, context-aware financial analysis and investment recommendations. What makes it stand out is its ability to balance profitability with sustainability, ensuring that users are not only making smart financial decisions but also considering eco-friendly alternatives.
+- Unlike static models, ours keeps track of conversation history, allowing for more natural and informed interactions. It continuously pulls real-time stock data and ESG (Environmental, Social, and Governance) metrics, so the insights it provides are always up to date. Whether you’re looking for the latest market trends or sustainable investment opportunities, the model adapts to your needs, providing accurate and actionable responses.
+- Trained on a mix of financial datasets and social sentiment from platforms like Twitter, it understands both the numbers and the broader market sentiment. And when you need real-time financial information, it taps into live finance APIs to ensure that every recommendation or analysis is backed by the latest data available.
+- This means you get insights that aren’t just theoretically sound but also practical and relevant in the moment. And since we are selfhosting our model, you can be confident that your data is always secure
 
 #### Integrated Financial & ESG Dashboard:
-We integrate real-time market data with in-depth ESG (Environmental, Social, and Governance) metrics, giving investors a complete picture of both financial performance and sustainability impact. This allows for smarter, more responsible investment decisions without compromising profitability.
-At the core of our system is a powerful stock screener, driven by a Natural Language to SQL model. Instead of relying on pre-set filters, users can define their own screening criteria using plain language, making the process highly flexible and intuitive. Whether you're looking for high-growth tech stocks with strong ESG ratings or undervalued companies with low carbon footprints, our system translates your requirements into precise database queries—giving you full control over your investment strategy.
+- We integrate real-time market data with in-depth ESG (Environmental, Social, and Governance) metrics, giving investors a complete picture of both financial performance and sustainability impact. This allows for smarter, more responsible investment decisions without compromising profitability.
+- At the core of our system is a powerful stock screener, driven by a Natural Language to SQL model. Instead of relying on pre-set filters, users can define their own screening criteria using plain language, making the process highly flexible and intuitive.
+- Whether you're looking for high-growth tech stocks with strong ESG ratings or undervalued companies with low carbon footprints, our system translates your requirements into precise database queries—giving you full control over your investment strategy.
 
 #### Carbon Footprint Tracking & Blockchain Offset Purchasing:
-Our system seamlessly integrates carbon footprint tracking with blockchain-based offset purchases, allowing users to manage their environmental impact while staying within the world of traditional finance. Built using Ethereum and Truffle, the platform enables users to update their carbon footprint, purchase tokenized carbon offsets, and receive CO2 tokens directly in their wallets.
-Each CarbonOffset (CO2) token represents a verifiable carbon credit, ensuring that every offset purchase contributes to real-world sustainability efforts. The smart contract handles transactions securely, allowing for dynamic token pricing, decentralized purchases, and transparent fund withdrawals. By linking financial decision-making with automated sustainability actions, we provide a seamless way for users to offset emissions while engaging with their investments responsibly.
+- Our system seamlessly integrates carbon footprint tracking with blockchain-based offset purchases, allowing users to manage their environmental impact while staying within the world of traditional finance. Built using Ethereum and Truffle, the platform enables users to update their carbon footprint, purchase tokenized carbon offsets, and receive CO2 tokens directly in their wallets.
+- Each CarbonOffset (CO2) token represents a verifiable carbon credit, ensuring that every offset purchase contributes to real-world sustainability efforts. The smart contract handles transactions securely, allowing for dynamic token pricing, decentralized purchases, and transparent fund withdrawals.
+-  By linking financial decision-making with automated sustainability actions, we provide a seamless way for users to offset emissions while engaging with their investments responsibly.
 
 #### Minimal effort Expense tracker App
-Most expense trackers require users to manually input every transaction, making budgeting a tedious task. Instead of manually entering every purchase, our app does the work for you— automatically logging every expense and income in real time. It even categorizes transactions intelligently by looking at where you are and what you’ve spent before, so you don’t have to sort through receipts later. Built with Kotlin on the mobile side, every change syncs instantly with the website, giving you a clear, up-to-date view of your finances without the hassle.
+- Most expense trackers require users to manually input every transaction, making budgeting a tedious task. Instead of manually entering every purchase, our app does the work for you— automatically logging every expense and income in real time.
+-  It even categorizes transactions intelligently by looking at where you are and what you’ve spent before, so you don’t have to sort through receipts later.
+-   Built with Kotlin on the mobile side, every change syncs instantly with the website, giving you a clear, up-to-date view of your finances without the hassle.
 
 ## Setup Instructions
  
-### Prerequisites
-- Requirement 1
-- Requirement 2
-- Requirement 3
 
 ### Installation 
 Ensure you have Git installed, then clone the repository
